@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: apaar-verify
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      # Optional: To use hosted PostgreSQL, connect DATABASE_URL
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: apaar-verify-db
+      #     property: connectionString
+
+# Optional managed database if user enables it on Render
+# databases:
+#   - name: apaar-verify-db
+#     plan: free
