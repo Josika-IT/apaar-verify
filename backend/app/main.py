@@ -70,6 +70,9 @@ app.include_router(verify_router, prefix=settings.API_V1_PREFIX)
 app.include_router(reports_router, prefix=settings.API_V1_PREFIX)
 app.include_router(audit_router, prefix=settings.API_V1_PREFIX)
 
+# Also expose verify and record pdf endpoints at root level for direct links
+app.include_router(verify_router)
+
 # Static files / Frontend serving
 dist_dir = settings.DIST_DIR
 assets_dir = os.path.join(dist_dir, "assets")
@@ -79,8 +82,12 @@ if os.path.exists(assets_dir):
 
 @app.get("/{full_path:path}", include_in_schema=False)
 async def serve_spa(request: Request, full_path: str):
-    # Skip api routes and health
-    if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("openapi") or full_path == "health":
+    # Skip api routes, pdf downloads, docs and health
+    if (full_path.startswith("api/") or 
+        full_path.startswith("docs") or 
+        full_path.startswith("openapi") or 
+        full_path == "health" or
+        full_path.endswith("/pdf")):
         return JSONResponse(status_code=404, content={"detail": "Not found"})
     
     # Try serving static file if directly matched
